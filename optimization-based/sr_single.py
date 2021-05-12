@@ -21,11 +21,12 @@ def get_kernel(gau_N=11, gau_std=1.2):
         kernel:   gaussian kernel with the shape (N, N)
     '''
     # ===== write your kernel here ===== #
+    half_window_size = int(gau_N/2)
 
+    x, y = np.mgrid[0:gau_N, 0:gau_N] - half_window_size
 
-
-
-
+    kernel = np.exp(-((-1.5-x)**2 + (-1.5-y)**2)/(2.*gau_std**2))
+    kernel = kernel/np.sum(kernel)
 
     return kernel
 
