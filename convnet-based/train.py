@@ -8,6 +8,7 @@ import argparse
 import os
 import numpy
 import random
+from time import time
 
 #===== Training settings =====#
 parser = argparse.ArgumentParser(description='NTHU EE - CP HW3 - ZebraSRNet')
@@ -114,7 +115,11 @@ def checkpoint(epoch):
     print("Checkpoint saved to {}".format(save_path))
 
 #===== Main procedure =====#
+start_t = time()
 for epoch in range(1, args.nEpochs+1):
     train(epoch)
     validate()
     checkpoint(epoch)
+end_t = time()
+dur = (end_t-start_t)/3600.
+print('Process time:', dur, 'Hours')

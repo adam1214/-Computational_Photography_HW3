@@ -23,12 +23,14 @@ def get_kernel(gau_N=13, gau_std=1.2, mv_x=0, mv_y=0):
         kernel:  gaussian kernel with the shape (N, N)
     '''
     # ===== write your kernel here ===== #
+    half_window_size = int(gau_N/2)
 
+    x, y = np.mgrid[0:gau_N, 0:gau_N] - half_window_size
 
-
-
-
-
+    shift_x = -1.5 + 4*mv_x
+    shift_y = -1.5 + 4*mv_y
+    kernel = np.exp(-((shift_x - x)**2 + (shift_y - y)**2)/(2.*gau_std**2))
+    kernel = kernel/np.sum(kernel)
 
     return kernel
 
@@ -49,12 +51,21 @@ def solve(imgs, filters, lamb):
     tstart = time.time()
     x = Variable(img4x_size)
     # ===== formulate the problem here, you can refer to sr_single.py ===== #
+    '''
+    Add_term = norm1(subsample(conv(filters[0], x, dims=2), (4, 4, 1)) - imgs[0])
     
-
-
-
-    
-    prob = Problem(...) 
+    for i in range(1,8,1):
+        Add_term += norm1(subsample(conv(filters[i], x, dims=2), (4, 4, 1)) - imgs[i])
+    '''
+    norm1_img0 = norm1(subsample(conv(filters[0], x, dims=2), (4, 4, 1)) - imgs[0])
+    norm1_img1 = norm1(subsample(conv(filters[1], x, dims=2), (4, 4, 1)) - imgs[1])
+    norm1_img2 = norm1(subsample(conv(filters[2], x, dims=2), (4, 4, 1)) - imgs[2])
+    norm1_img3 = norm1(subsample(conv(filters[3], x, dims=2), (4, 4, 1)) - imgs[3])
+    norm1_img4 = norm1(subsample(conv(filters[4], x, dims=2), (4, 4, 1)) - imgs[4])
+    norm1_img5 = norm1(subsample(conv(filters[5], x, dims=2), (4, 4, 1)) - imgs[5])
+    norm1_img6 = norm1(subsample(conv(filters[6], x, dims=2), (4, 4, 1)) - imgs[6])
+    norm1_img7 = norm1(subsample(conv(filters[7], x, dims=2), (4, 4, 1)) - imgs[7])
+    prob = Problem((norm1_img0+norm1_img1+norm1_img2+norm1_img3+norm1_img4+norm1_img5+norm1_img6+norm1_img7) + lamb*group_norm1(grad(x, dims=2), [3])) 
     
     # solve problem
     result = prob.solve(verbose=True, solver='pc', x0=img4x, max_iters=1000) 

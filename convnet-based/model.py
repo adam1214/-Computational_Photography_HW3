@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.nn.modules.upsampling import Upsample
 
 '''
     Example model construction in pytorch
@@ -33,24 +34,45 @@ class resblock(nn.Module):
         return out
 
 class upsampler(nn.Module):
-    def __init__(self, scale=2, nFeat, act=nn.ReLU(True)):
+    def __init__(self, scale=2, nFeat=16, act=nn.ReLU(True)):
         super(upsampler, self).__init__()
         #===== write your model definition here =====#
- 
-        
+        modules = []
+        modules.append(nn.Conv2d(nFeat, 64, kernel_size=3, padding=3 // 2, bias=True))
+        modules.append(nn.PixelShuffle(scale))
+        modules.append(act)
+        self.body = nn.Sequential(*modules)
+
     def forward(self, x):
         #===== write your dataflow here =====#
-
+        out = self.body(x)
         return out
 
 class ZebraSRNet(nn.Module):
     def __init__(self, nFeat=64, kernel_size=3, nResBlock=8, imgChannel=3):
         super(ZebraSRNet, self).__init__()
         #===== write your model definition here using 'resblock' and 'upsampler' as the building blocks =====#
+        modules1 = []
+        modules1.append(nn.Conv2d(3, 16, 3, padding= 3//2, bias=True))
+        self.body1 = nn.Sequential(*modules1)
 
+        modules2 = []
+        modules2.append(resblock(16, 3, True, nn.ReLU(True)))
+        modules2.append(resblock(16, 3, True, nn.ReLU(True)))
+        self.body2 = nn.Sequential(*modules2)
+
+        modules3 = []
+        modules3.append(upsampler(2, 16, act=nn.ReLU(True)))
+        modules3.append(upsampler(2, 16, act=nn.ReLU(True)))
+        modules3.append(nn.Conv2d(16, 3, 3, padding= 3//2, bias=True))
+        self.body3 = nn.Sequential(*modules3)
 
     def forward(self, x):
         #===== write your dataflow here =====#
+        out1 = self.body1(x)
 
-
-        return out
+        out2 = self.body2(out1)
+        out2 += out1
+        
+        out3 = self.body3(out2)
+        return out3
