@@ -38,7 +38,7 @@ class upsampler(nn.Module):
         super(upsampler, self).__init__()
         #===== write your model definition here =====#
         modules = []
-        modules.append(nn.Conv2d(nFeat, 64, kernel_size=3, padding=3 // 2, bias=True))
+        modules.append(nn.Conv2d(nFeat, nFeat*4, kernel_size=3, padding=3 // 2, bias=True))
         modules.append(nn.PixelShuffle(scale))
         modules.append(act)
         self.body = nn.Sequential(*modules)
