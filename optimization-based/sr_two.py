@@ -52,7 +52,7 @@ def solve(imgs, filters, lamb):
     x = Variable(img4x_size)
     # ===== formulate the problem here, you can refer to sr_single.py ===== #
     Add_term = norm1(subsample(conv(filters[0], x, dims=2), (4, 4, 1)) - imgs[0])
-    for i in range(1,8,1):
+    for i in range(1,2,1):
         Add_term += norm1(subsample(conv(filters[i], x, dims=2), (4, 4, 1)) - imgs[i])
 
     prob = Problem(Add_term + lamb*group_norm1(grad(x, dims=2), [3])) 
@@ -74,13 +74,14 @@ def check_ans(img_urs_path, img_ref_path):
     print('===> SSIM: {:.4f} dB'.format(ssim))
 
 if __name__ == '__main__':
+
     # set parameters
     gaussian_N = 13
     gaussian_std = 1.2
     lamb = 1e-2
     # read test images & load kernels
     img_test_path = './image/LR_zebra_test_mvx{:.2f}_mvy{:.2f}.png'
-    motion_shifts = [(0, 0), (0.22, 0.34), (-0.31, 0.18), (0.25, -0.29), (-0.36, -0.21), (-0.1, -0.1), (-0.12, 0.11), (0.2, 0.3)]
+    motion_shifts = [(0, 0), (0.22, 0.34)]
     img_tests = []
     gau_rgbs = []
     for motion_shift in motion_shifts:
@@ -91,13 +92,10 @@ if __name__ == '__main__':
     img_solved = solve(img_tests, gau_rgbs, lamb)
     # save result image
     img_out = np.round(255*np.clip(img_solved, 0.0, 1.0)).astype('uint8')
-    imageio.imwrite('./result/zebra_test_eight.png', img_out)
+    imageio.imwrite('./result/zebra_test_two.png', img_out)
     # check answer
-    img_urs_path = './result/zebra_test_eight.png'
+    img_urs_path = './result/zebra_test_two.png'
     img_ref_path =  './reference/HR_zebra_test.png'
     print('===== compare with original HR image ===== ')
-    check_ans(img_urs_path, img_ref_path)
-    img_ref_path =  './reference/zebra_test_eight_golden.png'
-    print('===== compare with TAs reference answer ===== ')
     check_ans(img_urs_path, img_ref_path)
     
