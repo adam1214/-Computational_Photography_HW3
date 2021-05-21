@@ -75,9 +75,9 @@ def check_ans(img_urs_path, img_ref_path):
 
 if __name__ == '__main__':
     # set parameters
-    gaussian_N = 13
+    gaussian_N = 5 # 原本是13
     gaussian_std = 1.2
-    lamb = 1e-1 # 原本是1e-2
+    lamb = 1e-2
     # read test images & load kernels
     img_test_path = './image/LR_zebra_test_mvx{:.2f}_mvy{:.2f}.png'
     motion_shifts = [(0, 0), (0.22, 0.34), (-0.31, 0.18), (0.25, -0.29), (-0.36, -0.21), (-0.1, -0.1), (-0.12, 0.11), (0.2, 0.3)]
