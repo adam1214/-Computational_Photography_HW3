@@ -22,7 +22,7 @@ if args.cuda and not torch.cuda.is_available():
     raise Exception("No GPU found, please run without --cuda")
 
 #===== load ZebraSRNet model =====#
-print('===> Loading model')
+#print('===> Loading model')
 net = torch.load(args.model_path)
 if args.cuda:
     net = net.cuda()
@@ -49,5 +49,5 @@ if args.compare_image_path is not None:
     prediction = imageio.imread(args.output_image_path) 
     psnr = psnr_metric(imgTar, prediction, data_range=255)
     print('===> PSNR: {:.4f} dB'.format(psnr))
-    ssim = ssim_metric(imgTar, prediction, multichannel=True)
-    print('===> SSIM: {:.4f} dB'.format(ssim))
+    #ssim = ssim_metric(imgTar, prediction, multichannel=True)
+    #print('===> SSIM: {:.4f} dB'.format(ssim))
